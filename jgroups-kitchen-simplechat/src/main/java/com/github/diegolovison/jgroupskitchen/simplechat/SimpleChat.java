@@ -19,7 +19,7 @@ public class SimpleChat {
     private void start() throws Exception {
         channel = new JChannel(); // use the default config, udp.xml
         channel.setReceiver(
-                new ChatReceiverAdapter(10));
+                new ChatReceiverAdapter(Integer.valueOf(System.getProperty("max_history", "5"))));
         channel.connect("ChatCluster");
         channel.getState(null, 10000);
     }
