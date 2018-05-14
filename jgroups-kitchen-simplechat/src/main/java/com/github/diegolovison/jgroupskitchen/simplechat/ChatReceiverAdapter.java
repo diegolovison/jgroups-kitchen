@@ -49,4 +49,8 @@ public class ChatReceiverAdapter extends ReceiverAdapter {
         System.out.println(messages.size() + " messages in chat history):");
         messages.forEach((str) -> System.out.println(str));
     }
+
+    public Messages getState() {
+        return this.state;
+    }
 }

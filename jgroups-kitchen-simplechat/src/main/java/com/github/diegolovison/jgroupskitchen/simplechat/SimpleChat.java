@@ -2,6 +2,8 @@ package com.github.diegolovison.jgroupskitchen.simplechat;
 
 import org.jgroups.JChannel;
 import org.jgroups.Message;
+import org.jgroups.jmx.JmxConfigurator;
+import org.jgroups.util.Util;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -17,11 +19,18 @@ public class SimpleChat {
     }
 
     private void start() throws Exception {
+
+        int maxMessagesToStore = Integer.valueOf(System.getProperty("max_history", "5"));
+        ChatReceiverAdapter chatReceiver = new ChatReceiverAdapter(maxMessagesToStore);
+
         channel = new JChannel(); // use the default config, udp.xml
-        channel.setReceiver(
-                new ChatReceiverAdapter(Integer.valueOf(System.getProperty("max_history", "5"))));
+        channel.setReceiver(chatReceiver);
         channel.connect("ChatCluster");
+
         channel.getState(null, 10000);
+
+        Util.registerChannel(channel, "chat-chanel");
+        JmxConfigurator.register(chatReceiver.getState(), Util.getMBeanServer(), "chat-chanel:obj=state-obj");
     }
 
     private void eventLoop() {
